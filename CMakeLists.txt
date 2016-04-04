@@ -6,7 +6,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 
 #Include utils
-include(CMakeUtils.txt)
+include(CMakeFunc.txt)
 include(dlib/cmake)
 add_subdirectory(face-landmark-detector)
 add_subdirectory(face-morpher)
