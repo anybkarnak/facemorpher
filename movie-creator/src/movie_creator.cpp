@@ -4,4 +4,4 @@
 
 #include "movie_creator.h"
 
-int MovieCreator::CreateMovie(const std::string& src1, const std::string& src2, const std::string& dst) { }
+int MovieCreator::CreateMovie(const std::string& src1, const std::string& src2, const std::string& dst) {return 0; }

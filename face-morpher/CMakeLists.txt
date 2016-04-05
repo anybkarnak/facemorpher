@@ -7,7 +7,7 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 include(../dlib/cmake)
 #Internal files
 GENERATE_PROJECT_STRUCTURE_VARIABLE()
-install(FILES "triangles.txt" DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+install_files(${CMAKE_RUNTIME_OUTPUT_DIRECTORY} FILES "src/triangles.txt")
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_FILES})
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} face-landmark-detector)
 target_include_directories(${PROJECT_NAME} PUBLIC ${${PROJECT_NAME}_INCLUDES_DIR})
