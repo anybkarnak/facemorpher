@@ -11,9 +11,11 @@ using namespace cv;
 std::vector<cv::Vec6f> GetTriangles(std::vector<cv::Vec6f>& firstvector, std::vector<cv::Vec6f>& secondvector);
 
 // Draw a single point
-static void draw_point(Mat& img, Point2f fp, Scalar color)
+static void draw_point(Mat& img, Point2f fp, Scalar color, std::string text)
 {
-    circle(img, fp, 2, color, CV_FILLED, CV_AA, 0);
+    putText(img, text, fp,
+            FONT_HERSHEY_COMPLEX_SMALL, 0.3, color, 1, CV_AA);
+    //circle(img, fp, 2, color, CV_FILLED, CV_AA, 0);
 }
 
 // Draw delaunay triangles
@@ -248,6 +250,44 @@ int InsertLastPoints(const cv::Mat& img, std::vector<cv::Point2f>& points)
     points.push_back(cv::Point2f(img.cols - 1, img.rows / 2));
 }
 
+// Calculate Delaunay triangles for set of points
+// Returns the vector of indices of 3 points for each triangle
+static void calculateDelaunayTriangles(Rect rect, vector<Point2f> &points, vector< vector<int> > &delaunayTri){
+
+    // Create an instance of Subdiv2D
+    Subdiv2D subdiv(rect);
+
+    // Insert points into subdiv
+    for( vector<Point2f>::iterator it = points.begin(); it != points.end(); it++)
+        subdiv.insert(*it);
+
+    vector<Vec6f> triangleList;
+    subdiv.getTriangleList(triangleList);
+    vector<Point2f> pt(3);
+    vector<int> ind(3);
+
+    for( size_t i = 0; i < triangleList.size(); i++ )
+    {
+        Vec6f t = triangleList[i];
+        pt[0] = Point2f(t[0], t[1]);
+        pt[1] = Point2f(t[2], t[3]);
+        pt[2] = Point2f(t[4], t[5 ]);
+
+        if ( rect.contains(pt[0]) && rect.contains(pt[1]) && rect.contains(pt[2])){
+            for(int j = 0; j < 3; j++)
+                for(size_t k = 0; k < points.size(); k++)
+                    if(abs(pt[j].x - points[k].x) < 1.0 && abs(pt[j].y - points[k].y) < 1)
+                        ind[j] = k;
+
+            delaunayTri.push_back(ind);
+        }
+    }
+
+}
+
+
+
+
 
 int main(int argc,      // Number of strings in array argv
          char* argv[])  // Array of command-line argument strings
@@ -281,7 +321,7 @@ int main(int argc,      // Number of strings in array argv
     // Turn on animation while drawing triangles
 
     bool animate = false;
-    Scalar delaunay_color(255, 255, 255), points_color(0, 0, 255);
+    Scalar delaunay_color(0, 255, 255), points_color(0, 0, 255);
 
 
 
@@ -314,13 +354,13 @@ int main(int argc,      // Number of strings in array argv
 
     InsertLastPoints(img,  points);
     // Insert points into subdiv
-    for (vector<Point2f>::iterator it = points.begin(); it != points.end(); it++)
-    {
-        subdiv.insert(*it);
+//    for (vector<Point2f>::iterator it = points.begin(); it != points.end(); it++)
+//    {
+//        subdiv.insert(*it);
+//
+//    }
 
-    }
-
-    vector<Point2f> im1_triangles = getVectorTriangles(img, subdiv);
+   // vector<Point2f> im1_triangles = getVectorTriangles(img, subdiv);
 
     //Draw points
 
@@ -331,9 +371,12 @@ int main(int argc,      // Number of strings in array argv
 //        line(img, im1_triangles[i + 1], im1_triangles[i + 2], delaunay_color, 1, CV_AA, 0);
 //    }
 //
+
+//    int m_i=0;
 //    for (vector<Point2f>::iterator it = points.begin(); it != points.end(); it++)
 //    {
-//        draw_point(img, *it, points_color);
+//        draw_point(img, *it, points_color, std::to_string(m_i));
+//        m_i++;
 //    }
 
     //Show results.=============================================================================================================================
@@ -370,82 +413,105 @@ int main(int argc,      // Number of strings in array argv
 
     InsertLastPoints(img1,  points1);
     // Insert points into subdiv
-    for (vector<Point2f>::iterator it = points1.begin(); it != points1.end(); it++)
-    {
-        subdiv1.insert(*it);
+//    for (vector<Point2f>::iterator it = points1.begin(); it != points1.end(); it++)
+//    {
+//        subdiv1.insert(*it);
+//
+//    }
 
-    }
+    //vector<Vec6f> firstVec;
+   // subdiv.getTriangleList(firstVec);
 
-    vector<Vec6f> firstVec;
-    subdiv.getTriangleList(firstVec);
+    //vector<Point2f> im2_triangles =  getVectorTriangles(img1, subdiv1, firstVec);
 
-    vector<Point2f> im2_triangles =  getVectorTriangles(img1, subdiv1, firstVec);
-
+    //int minsize = std::min(im2_triangles.size(), im1_triangles.size());
 
     // Draw  triangles   Draw points
-//    for (size_t i = 0; i < im2_triangles.size(); i = i + 3)
+//    for (int i = 0; i < minsize; i = i + 3)
 //    {
 //        line(img1, im2_triangles[i], im2_triangles[i + 1], delaunay_color, 1, CV_AA, 0);
 //        line(img1, im2_triangles[i], im2_triangles[i + 2], delaunay_color, 1, CV_AA, 0);
 //        line(img1, im2_triangles[i + 1], im2_triangles[i + 2], delaunay_color, 1, CV_AA, 0);
+//
+//        line(img, im1_triangles[i], im1_triangles[i + 1], delaunay_color, 1, CV_AA, 0);
+//        line(img, im1_triangles[i], im1_triangles[i + 2], delaunay_color, 1, CV_AA, 0);
+//        line(img, im1_triangles[i + 1], im1_triangles[i + 2], delaunay_color, 1, CV_AA, 0);
+//
+//        cv::Mat merged = Mat::zeros(img1.rows, img1.cols*2, CV_32FC3);
+//        cv::hconcat(img1, img, merged);
+//        std::string name = std::string("merg/") + std::to_string(i)+"img.jpg";
+//        imwrite(name, merged );
 //    }
 //
+//    m_i=0;
 //    for (vector<Point2f>::iterator it = points1.begin(); it != points1.end(); it++)
 //    {
-//        draw_point(img1, *it, points_color);
+//        draw_point(img1, *it, points_color,std::to_string(m_i));
+//        m_i++;
 //    }
 
+//          cv::Mat merged = Mat::zeros(img1.rows, img1.cols*2, CV_32FC3);
+//        cv::hconcat(img1, img, merged);
+//        std::string name = std::string("points") +"img.jpg";
+//        imwrite(name, merged );
+
+    std::vector<Point2f> avgPoints;
+//    for (vector<Point2f>::iterator it  = points1.begin(), it1 = points.begin(); it!=points.end();it++)
+//    {
+//        avgPoints.push_back((*it+*it1)*0.5);
+//    }
+    for (int i = 0; i < points.size(); i++)
+    {
+        float x, y;
+        x =  (points[i].x +  points1[i].x)*0.5;
+        y =  (points[i].y +  points1[i].y)*0.5;
+
+        avgPoints.push_back(Point2f(x, y));
+    }
+
+    Mat img1Warped = img.clone();
+
+
+    vector< vector<int> > dt;
+    Rect rectWarped(0, 0, img1Warped.cols, img1Warped.rows);
+    calculateDelaunayTriangles(rectWarped, avgPoints, dt);
+
    // imshow("dl1", img1/255);
-
-
     vector<Point2f> morphPoints;
     double alpha = 0.5;
     //empty average image
     Mat imgMorph = Mat::zeros(img1.size(), CV_32FC3);
     //compute weighted average point coordinates
-    for (int i = 0; i < im2_triangles.size(); i++)
+    for (int i = 0; i < points.size(); i++)
     {
         float x, y;
-        x = (1 - alpha) * im1_triangles[i].x + alpha * im2_triangles[i].x;
-        y = (1 - alpha) * im1_triangles[i].y + alpha * im2_triangles[i].y;
+        x = (1 - alpha) * points[i].x + alpha * points1[i].x;
+        y = (1 - alpha) * points[i].y + alpha * points1[i].y;
 
         morphPoints.push_back(Point2f(x, y));
     }
 
 
-    for (int i = 0; i < im2_triangles.size(); i += 3)
+    for (int i = 0; i < dt.size(); i ++)
     {
         // Triangles
         vector<Point2f> t1, t2, t;
 
-        // Triangle corners for image 1.
-        t1.push_back(im1_triangles[i]);
-        t1.push_back(im1_triangles[i + 1]);
-        t1.push_back(im1_triangles[i + 2]);
-       // std::cout << " added points 1 " << std::endl << im1_triangles[i].x << " " << im1_triangles[i].y << std::endl;
-        //std::cout << im1_triangles[i + 1].x << " " << im1_triangles[i + 1].y << std::endl;
-       // std::cout << im1_triangles[i + 2].x << " " << im1_triangles[i + 2].y << std::endl;
-        // Triangle corners for image 2.
-        t2.push_back(im2_triangles[i]);
-        t2.push_back(im2_triangles[i + 1]);
-        t2.push_back(im2_triangles[i + 2]);
-       // std::cout << " added points 2 " << std::endl << im2_triangles[i].x << " " << im2_triangles[i].y << std::endl;
-       // std::cout << im2_triangles[i + 1].x << " " << im2_triangles[i + 1].y << std::endl;
-       // std::cout << im2_triangles[i + 2].x << " " << im2_triangles[i + 2].y << std::endl;
-        // Triangle corners for morphed image.
-        t.push_back(morphPoints[i]);
-        t.push_back(morphPoints[i + 1]);
-        t.push_back(morphPoints[i + 2]);
-      //  std::cout << " added points 3 " << std::endl << morphPoints[i].x << " " << morphPoints[i].y << std::endl;
-      //  std::cout << morphPoints[i + 1].x << " " << morphPoints[i + 1].y << std::endl;
-      //  std::cout << morphPoints[i + 2].x << " " << morphPoints[i + 2].y << std::endl;
+
+        for(size_t j = 0; j < 3; j++)
+        {
+            t1.push_back(points[dt[i][j]]);
+            t2.push_back(points1[dt[i][j]]);
+            t.push_back(morphPoints[dt[i][j]]);
+        }
+
         morphTriangle(img, img1, imgMorph, t1, t2, t, alpha);
-        // Display Result
+
     }
-
-
-    imwrite(path1+"Morphed_Face.jpg", imgMorph );
-
+//
+//
+     imwrite(path1+"Morphed_Face.jpg", imgMorph );
+//
 
 
     return 0;
