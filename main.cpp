@@ -285,10 +285,6 @@ static void calculateDelaunayTriangles(Rect rect, vector<Point2f> &points, vecto
 
 }
 
-
-
-
-
 int main(int argc,      // Number of strings in array argv
          char* argv[])  // Array of command-line argument strings
 {
@@ -323,23 +319,16 @@ int main(int argc,      // Number of strings in array argv
     bool animate = false;
     Scalar delaunay_color(0, 255, 255), points_color(0, 0, 255);
 
-
-
     // Define colors for drawing.
 
     // Read in the image.
     Mat img = imread(path);
 
     img.convertTo(img, CV_32F);
-    // Keep a copy around
-    Mat img_orig = img.clone();
 
     // Rectangle to be used with Subdiv2D
     Size size = img.size();
     Rect rect(0, 0, size.width, size.height);
-
-    // Create an instance of Subdiv2D
-    Subdiv2D subdiv(rect);
 
     // Create a vector of points.
     vector<Point2f> points;
@@ -389,16 +378,18 @@ int main(int argc,      // Number of strings in array argv
 
     // Read in the image.
     Mat img1 = imread(path1);
+    if(img.rows!=img1.rows||img.cols!=img1.cols)
+    {
+        cv::imwrite("tmp"+path1,img1);
+        cv::resize(img1,img1,cv::Size(img.cols,img.rows));
+        cv::imwrite(path1,img1);
+    }
+
     img1.convertTo(img1, CV_32F);
-    // Keep a copy around
-    Mat img_orig1 = img1.clone();
 
     // Rectangle to be used with Subdiv2D
-    Size size1 = img.size();
+    Size size1 = img1.size();
     Rect rect1(0, 0, size.width, size.height);
-
-    // Create an instance of Subdiv2D
-    Subdiv2D subdiv1(rect1);
 
     // Create a vector of points.
     vector<Point2f> points1;
