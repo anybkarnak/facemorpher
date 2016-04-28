@@ -10,11 +10,11 @@ MESSAGE( STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY:         " ${CMAKE_LIBRARY_OUTPU
 
 #Include utils
 include(CMakeFunc.txt)
-include(dlib/cmake)
+
 add_subdirectory(face-landmark-detector)
 add_subdirectory(face-morpher)
 add_subdirectory(movie-creator)
-add_subdirectory(dlib)
+
 set(SOURCE_FILES main.cpp)
 add_executable(face_morpher ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} face-morpher face-landmark-detector movie-creator)

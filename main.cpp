@@ -403,54 +403,9 @@ int main(int argc,      // Number of strings in array argv
     }
 
     InsertLastPoints(img1,  points1);
-    // Insert points into subdiv
-//    for (vector<Point2f>::iterator it = points1.begin(); it != points1.end(); it++)
-//    {
-//        subdiv1.insert(*it);
-//
-//    }
-
-    //vector<Vec6f> firstVec;
-   // subdiv.getTriangleList(firstVec);
-
-    //vector<Point2f> im2_triangles =  getVectorTriangles(img1, subdiv1, firstVec);
-
-    //int minsize = std::min(im2_triangles.size(), im1_triangles.size());
-
-    // Draw  triangles   Draw points
-//    for (int i = 0; i < minsize; i = i + 3)
-//    {
-//        line(img1, im2_triangles[i], im2_triangles[i + 1], delaunay_color, 1, CV_AA, 0);
-//        line(img1, im2_triangles[i], im2_triangles[i + 2], delaunay_color, 1, CV_AA, 0);
-//        line(img1, im2_triangles[i + 1], im2_triangles[i + 2], delaunay_color, 1, CV_AA, 0);
-//
-//        line(img, im1_triangles[i], im1_triangles[i + 1], delaunay_color, 1, CV_AA, 0);
-//        line(img, im1_triangles[i], im1_triangles[i + 2], delaunay_color, 1, CV_AA, 0);
-//        line(img, im1_triangles[i + 1], im1_triangles[i + 2], delaunay_color, 1, CV_AA, 0);
-//
-//        cv::Mat merged = Mat::zeros(img1.rows, img1.cols*2, CV_32FC3);
-//        cv::hconcat(img1, img, merged);
-//        std::string name = std::string("merg/") + std::to_string(i)+"img.jpg";
-//        imwrite(name, merged );
-//    }
-//
-//    m_i=0;
-//    for (vector<Point2f>::iterator it = points1.begin(); it != points1.end(); it++)
-//    {
-//        draw_point(img1, *it, points_color,std::to_string(m_i));
-//        m_i++;
-//    }
-
-//          cv::Mat merged = Mat::zeros(img1.rows, img1.cols*2, CV_32FC3);
-//        cv::hconcat(img1, img, merged);
-//        std::string name = std::string("points") +"img.jpg";
-//        imwrite(name, merged );
 
     std::vector<Point2f> avgPoints;
-//    for (vector<Point2f>::iterator it  = points1.begin(), it1 = points.begin(); it!=points.end();it++)
-//    {
-//        avgPoints.push_back((*it+*it1)*0.5);
-//    }
+
     for (int i = 0; i < points.size(); i++)
     {
         float x, y;
@@ -461,7 +416,6 @@ int main(int argc,      // Number of strings in array argv
     }
 
     Mat img1Warped = img.clone();
-
 
     vector< vector<int> > dt;
     Rect rectWarped(0, 0, img1Warped.cols, img1Warped.rows);
