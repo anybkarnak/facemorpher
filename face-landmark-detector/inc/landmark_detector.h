@@ -16,11 +16,11 @@ class FaceLandmarkDetector
 public:
     FaceLandmarkDetector(const std::string& shapePredictor);
     std::vector<dlib::point> DetectFaceLandmarks(const std::string& src);
-
+    ~FaceLandmarkDetector();
 private:
     dlib::frontal_face_detector m_detector;
     dlib::shape_predictor m_shape_predictor;
 
 };
-
+typedef std::shared_ptr<FaceLandmarkDetector> FaceLandmarkDetectorPtr;
 #endif //LANDMARK_DETECTOR_H

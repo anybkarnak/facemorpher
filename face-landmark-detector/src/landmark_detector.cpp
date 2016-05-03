@@ -4,13 +4,13 @@
 
 #include "landmark_detector.h"
 
-FaceLandmarkDetector::FaceLandmarkDetector(const std::string& shapePredictor)
+FaceLandmarkDetector::FaceLandmarkDetector(const std::string &shapePredictor)
 {
     m_detector = dlib::get_frontal_face_detector();
     dlib::deserialize(shapePredictor.c_str()) >> m_shape_predictor;
 };
 
-std::vector<dlib::point> FaceLandmarkDetector::DetectFaceLandmarks(const std::string& src)
+std::vector<dlib::point> FaceLandmarkDetector::DetectFaceLandmarks(const std::string &src)
 {
     dlib::array2d<dlib::rgb_pixel> img;
     load_image(img, src.c_str());
@@ -20,7 +20,7 @@ std::vector<dlib::point> FaceLandmarkDetector::DetectFaceLandmarks(const std::st
     // Now tell the face detector to give us a list of bounding boxes
     // around all the faces in the image.
     std::vector<dlib::rectangle> dets = m_detector(img);
-    std::cout << "Number of faces detected: " << dets.size() << std::endl;
+    //std::cout << "Number of faces detected: " << dets.size() << std::endl;
 
     // Now we will go ask the shape_predictor to tell us the pose of
     // each face we detected.
@@ -34,4 +34,9 @@ std::vector<dlib::point> FaceLandmarkDetector::DetectFaceLandmarks(const std::st
     }
 
     return points;
+}
+
+FaceLandmarkDetector::~FaceLandmarkDetector()
+{
+
 }
