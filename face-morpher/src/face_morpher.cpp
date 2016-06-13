@@ -16,13 +16,13 @@ int FaceMorpher::MorphFace(const std::string& src1, const std::string& src2, con
 
     // Read first image
     Mat img1 = imread(src1);
-    img1.convertTo(img1, CV_32F);
+
     // Rectangle to be used with Subdiv2D
     Size size = img1.size();
     Rect rect(0, 0, size.width, size.height);
     // Create a vector of points.
     vector<Point2f> points1;
-    std::vector<dlib::point> src1_points = m_landmarkDetector->DetectFaceLandmarks(src1);
+    std::vector<dlib::point> src1_points = m_landmarkDetector->DetectFaceLandmarks(img1);
     for (unsigned long k = 0; k < src1_points.size(); ++k)
     {
         // cout << "pixel position of " <<k<<"  part: x= " << dl_points[k].x()<<" y= " <<dl_points[k].y()<< endl;
@@ -35,21 +35,19 @@ int FaceMorpher::MorphFace(const std::string& src1, const std::string& src2, con
     Mat img2 = imread(src2);
     if(img2.rows!=img1.rows||img2.cols!=img1.cols)
     {
-        cv::imwrite("tmp"+src1,img1);
         cv::resize(img2,img2,cv::Size(img1.cols,img1.rows));
-        cv::imwrite(src1,img1);
     }
 
-    img1.convertTo(img1, CV_32F);
+
 
     // Rectangle to be used with Subdiv2D
-    Size size1 = img1.size();
-    Rect rect1(0, 0, size.width, size.height);
+    Size size1 = img2.size();
+    Rect rect1(0, 0, size1.width, size1.height);
 
     // Create a vector of points.
     vector<Point2f> points2;
 
-    std::vector<dlib::point> src2_points2 = m_landmarkDetector->DetectFaceLandmarks(src2);
+    std::vector<dlib::point> src2_points2 = m_landmarkDetector->DetectFaceLandmarks(img2);
 
     for (unsigned long k = 0; k < src2_points2.size(); ++k)
     {
@@ -59,8 +57,10 @@ int FaceMorpher::MorphFace(const std::string& src1, const std::string& src2, con
 
     InsertLastPoints(img2,  points2);
 
-    std::vector<Point2f> avgPoints = GetAveragePOints(points1, points2); //the same order
+    std::vector<Point2f> avgPoints = GetAveragePOints(points1, points2); //the same order of points1 and points2
 
+    img2.convertTo(img2, CV_32F);
+    img1.convertTo(img1, CV_32F);
 
     Mat img1Warped = img1.clone();
 

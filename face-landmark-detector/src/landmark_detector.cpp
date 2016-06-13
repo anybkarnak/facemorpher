@@ -10,10 +10,9 @@ FaceLandmarkDetector::FaceLandmarkDetector(const std::string &shapePredictor)
     dlib::deserialize(shapePredictor.c_str()) >> m_shape_predictor;
 };
 
-std::vector<dlib::point> FaceLandmarkDetector::DetectFaceLandmarks(const std::string &src)
+std::vector<dlib::point> FaceLandmarkDetector::DetectFaceLandmarks(const cv::Mat& src)
 {
-    dlib::array2d<dlib::rgb_pixel> img;
-    load_image(img, src.c_str());
+    dlib::cv_image<dlib::bgr_pixel> img(src);
     // Make the image larger so we can detect small faces.
     //pyramid_up(img);
 
